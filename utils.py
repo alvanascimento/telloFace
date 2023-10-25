@@ -21,16 +21,17 @@ def trackFace(drone, bbox, W, H):
     (x, y, w, h) = bbox
     erroW = (x+w//2) - W//2
     erroH = (y+h//2) - H//2
+    erroZ = int(((w*h//1000) - 10) * -1)
     yaw = int(np.interp(erroW, [-W//2,W//2], [-speedYaw, speedYaw]))
     if abs(yaw) < speedYaw*ruido: yaw = 0
     ud  = int(np.interp(erroH, [-H//2,H//2], [speedUD, -speedUD]))
     if abs(ud) < speedUD*ruido: ud = 0
     print(bbox)
-    print("L/R:", 0)
-    print("F/B:", 0)
+    # print("L/R:", 0)
+    print("F/B:", erroZ)
     print("U/D:", ud)
     print("Yaw:", yaw)
-    drone.send_rc_control(0, 0, ud, yaw)
+    drone.send_rc_control(0, erroZ, ud, yaw)
     print("Bateria:", drone.get_battery())
     print("Temperatura:", drone.get_temperature())
 

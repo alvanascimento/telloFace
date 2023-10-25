@@ -1,9 +1,11 @@
 from utils import *
 import cv2
+from time import time
 
 W       = 640
 H       = 360
 drone   = iniDrone()
+relogio = time()
 
 while True:
     # Camera do Drone
@@ -17,7 +19,13 @@ while True:
     img = cv2.resize(frame, (W,H))
     img, bbox = findFace(img)
     cv2.imshow("Drone", img)
-    if bbox: trackFace(drone, bbox, W, H)
+    if bbox:
+        relogio = time()
+        trackFace(drone, bbox, W, H)
+    else:
+        if relogio and (time()-relogio) > 2:
+            relogio = None 
+            drone.send_rc_control(0, 0, 0, 0)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         drone.land()
